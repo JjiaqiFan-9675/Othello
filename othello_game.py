@@ -1,6 +1,9 @@
 from othello_board import Board
-
 from ai_player import AI
+
+'''
+    This is how the game runs! You are the player of this game!
+'''
 
 class Game(object):
 
@@ -19,6 +22,16 @@ class Game(object):
         print('-----------------------------------------------------')
         self.block = self.input_int_detect(_input, 0, self.size)
 
+        self.ai_option = 1
+        self.AI_RANDOM = 1
+        self.AI_MINIMAX = 2
+        self.AI_EXPECTIMAX = 3
+
+        print('Now, choose the mode of game. 1:Easy mode(Random AI). 2:Medium mode(Minimax). 3:Hard mode(EXPECTIMAX)')
+        print('-----------------------------------------------------')
+        _input = input('Input the integer to the mode: ')
+        print('-----------------------------------------------------')
+        self.ai_option = self.input_int_detect(_input, 1, 4)
 
         print('Choose whether to play first')
         print('-----------------------------------------------------')
@@ -34,10 +47,12 @@ class Game(object):
             print('-----------------------------------------------------')
             self.player = 1
 
+
         self.winner = 0
         self.NOT_FINISH = -1
         self.PLAYER_WIN = 1
         self.AI_WIN = 2
+
 
         print(' Hints : 2 is wall, 1 is you and -1 is AI')
         print('-----------------------------------------------------')
@@ -57,12 +72,12 @@ class Game(object):
                 else:
                     print('Your input is out of range!')
                     print('-----------------------------------------------------')
-                    integer = input('You need to re-input a Integer number!!!')
+                    _input = input('You need to re-input a Integer number!!!')
                     print('-----------------------------------------------------')
             except:
                 print('You did not input a Integer number!!!')
                 print('-----------------------------------------------------')
-                integer = input('You need to re-input a Integer number!!!')
+                _input = input('You need to re-input a Integer number!!!')
                 print('-----------------------------------------------------')
 
         return nint
@@ -71,6 +86,8 @@ class Game(object):
         print('Now you have several valid actions to choose')
         print('-----------------------------------------------------')
         print(actions)
+        print('-----------------------------------------------------')
+        print(' Hints : 2 is wall, 1 is you and -1 is AI')
         print('-----------------------------------------------------')
 
         while True:
@@ -95,14 +112,21 @@ class Game(object):
         self.oth.print_board()
         print('-----------------------------------------------------')
 
-    def ai_turn(self,actions):
+    def ai_turn(self, actions):
         print('Now it is the AI turn')
         print('-----------------------------------------------------')
         print('Valid actions:', actions)
         print('-----------------------------------------------------')
 
-        action = AI.random_method(actions)
-        #action = AI.minimax_method(self.oth, actions, self.oth.AI_COLOR, 4)
+        if self.ai_option == self.AI_RANDOM:
+            action = AI.random_method(actions)
+        elif self.ai_option == self.AI_MINIMAX:
+            action = AI.minimax_method(actions, self.oth)
+        else:
+            action = AI.expectimax_method(actions, self.oth)
+
+        print("The AI chooses " + str(action))
+
         self.oth.ai_action(action)
         self.oth.print_board()
         print('-----------------------------------------------------')

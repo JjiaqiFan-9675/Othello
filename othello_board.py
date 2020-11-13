@@ -1,6 +1,9 @@
 import numpy as np
 import random
 
+'''
+    This is the state of the game board!
+'''
 
 class Board:
     def __init__(self, size, block):
@@ -15,9 +18,6 @@ class Board:
         # Each side has 2 pieces at start
         self.player_node = 2
         self.ai_node = 2
-        self.last_player_node = self.player_node
-        self.last_ai_node = self.ai_node
-
 
         # initialize board
         self.board = np.zeros((size, size), dtype=int)
@@ -42,57 +42,105 @@ class Board:
 
         return blocks
 
+    def get_current_score(self):
+        ai_node = 0
+        player_node = 0
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.board[i][j] == self.AI_COLOR:
+                    ai_node += 1
+                elif self.board[i][j] == self.PLAYER_COLOR:
+                    player_node += 1
+        self.ai_node = ai_node
+        self.player_node = player_node
+
     def action_valid(self, player):
         actions = set()
 
         for i in range(self.size):
             for j in range(self.size):
                 if self.board[i][j] == player * -1:
-                    for (x,y) in [(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1)]:
-                        _row, _col = i+x*-1, j+y*-1
+                    # up
+                    row = i
+                    while row > 0 and self.board[row][j] == player * -1: row -= 1
+                    if row >= 0 and i < self.size - 1 and self.board[row][j] == player and self.board[i + 1][j] == 0:
+                        actions.add((i + 1, j))
 
-                        if _row < 0 or _col < 0 or _row >= self.size or _col >= self.size:
-                            continue
+                    # down
+                    row = i
+                    while row < self.size - 1 and self.board[row][j] == player * -1: row += 1
+                    if i > 0 and row <= self.size - 1 and self.board[row][j] == player and self.board[i - 1][j] == 0:
+                        actions.add((i - 1, j))
 
-                        nrow, ncol = i, j
-                        while self.board[nrow][ncol] == player*-1:
-                            nrow += x
-                            ncol += y
-                            if nrow < 0 or ncol < 0 or nrow >= self.size or ncol >= self.size:
-                                break
+                    # left
+                    col = j
+                    while col > 0 and self.board[i][col] == player * -1: col -= 1
+                    if col >= 0 and j < self.size - 1 and self.board[i][col] == player and self.board[i][j + 1] == 0:
+                        actions.add((i, j + 1))
 
-                        if nrow < 0 or ncol < 0 or nrow >= self.size or ncol >= self.size:
-                            continue
+                    # right
+                    col = j
+                    while col < self.size - 1 and self.board[i][col] == player * -1: col += 1
+                    if j > 0 and col <= self.size - 1 and self.board[i][col] == player and self.board[i][j - 1] == 0:
+                        actions.add((i, j - 1))
 
-                        if self.board[nrow][ncol] == player and self.board[_row][_col] == self.EMPTY:
-                            actions.add((i+x, j+y))
+                    # upper left
+                    row, col = i, j
+                    while row > 0 and col > 0 and self.board[row][col] == player * -1:
+                        row -= 1
+                        col -= 1
+                    if row >= 0 and col >= 0 \
+                            and i < self.size - 1 and j < self.size - 1 \
+                            and self.board[row][col] == player and self.board[i + 1][j + 1] == 0:
+                        actions.add((i + 1, j + 1))
+
+                    # upper right
+                    row, col = i, j
+                    while row > 0 and col < self.size and self.board[row][col] == player * -1:
+                        row -= 1
+                        col += 1
+                    if row >= 0 and col <= self.size - 1 \
+                            and i < self.size - 1 and j > 0 \
+                            and self.board[row][col] == player and self.board[i + 1][j - 1] == 0:
+                        actions.add((i + 1, j - 1))
+
+                    # lower left
+                    row, col = i, j
+                    while row < self.size - 1 and col > 0 and self.board[row][col] == player * -1:
+                        row += 1
+                        col -= 1
+                    if row <= self.size - 1 and col >= 0 \
+                            and i > 0 and j < self.size - 1 \
+                            and self.board[row][col] == player and self.board[i - 1][j + 1] == 0:
+                        actions.add((i - 1, j + 1))
+
+                    # lower right
+                    row, col = i, j
+                    while row < self.size - 1 and col < self.size - 1 and self.board[row][col] == player * -1:
+                        row += 1
+                        col += 1
+                    if row <= self.size - 1 and col <= self.size - 1 \
+                            and i > 0 and j > 0 \
+                            and self.board[row][col] == player and self.board[i - 1][j - 1] == 0:
+                        actions.add((i - 1, j - 1))
 
         return list(actions)
 
     # Player is 1
     def player_action(self, action):
-        self.last_ai_node = self.ai_node
-        self.last_player_node = self.player_node
         self.last_board_state = self.board.copy()
 
-        self.change(action,self.PLAYER_COLOR)
+        self.change(action, self.PLAYER_COLOR)
         self.board[action[0]][action[1]] = self.PLAYER_COLOR
-        self.player_node += 1
 
     # AI is -1
     def ai_action(self, action):
-        self.last_ai_node = self.ai_node
-        self.last_player_node = self.player_node
         self.last_board_state = self.board.copy()
 
-        print("The AI chooses " + str(action))
         self.change(action, self.AI_COLOR)
         self.board[action[0]][action[1]] = self.AI_COLOR
-        self.ai_node += 1
 
     def backward(self):
-        self.ai_node = self.last_ai_node
-        self.player_node = self.last_player_node
         self.board = self.last_board_state.copy()
 
     def print_board(self):
@@ -103,10 +151,14 @@ class Board:
     # if both win, return 0;
     # if game not finished, return -1;
     def finish(self, actions):
-        if self.block + self.player_node + self.ai_node == self.size * self.size or len(actions) == 0:
-            if self.player_node > self.ai_node: return 1
-            elif self.player_node < self.ai_node: return 2
-            else: return 0
+        if len(actions) == 0:
+            self.get_current_score()
+            if self.player_node > self.ai_node:
+                return 1
+            elif self.player_node < self.ai_node:
+                return 2
+            else:
+                return 0
 
         return -1
 
@@ -114,37 +166,104 @@ class Board:
         row = action[0]
         col = action[1]
 
-        for (x, y) in [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]:
-            # check if this player was surrounded by other player
-            nrow, ncol = row+x, col+y
-            if nrow < 0 or ncol < 0 or nrow >= self.size or ncol >= self.size:
-                continue
+        up, down, left, right = row, row, col, col
 
-            while self.board[nrow][ncol] != self.WALL:
-                nrow, ncol = nrow + x, ncol + y
-                if nrow < 0 or ncol < 0 or nrow >= self.size or ncol >= self.size:
-                    break
+        if row > 0: up = row - 1
+        if row < self.size - 1: down = row + 1
+        if col > 0: left = col - 1
+        if col < self.size - 1: right = col + 1
 
-            if nrow > -1 and ncol > -1 and nrow < self.size and ncol < self.size:
-                continue
+        # check up
+        while up > 0 and self.board[up][col] == player * -1:
+            up -= 1
+        if self.board[up][col] == player:
+            if row > 0: up = row - 1
+            while up > 0 and self.board[up][col] == player * -1:
+                self.board[up][col] = player
+                up -= 1
 
-            if self.board[nrow][ncol] == self.WALL:
-                continue
+        # check down
+        while down < self.size - 1 and self.board[down][col] == player * -1:
+            down += 1
+        if self.board[down][col] == player:
+            if row < self.size - 1: down = row + 1
+            while down < self.size - 1 and self.board[down][col] == player * -1:
+                self.board[down][col] = player
+                down += 1
 
-            nrow, ncol = row + x, col + y
-            while self.board[nrow][ncol] == player*-1:
-                self.board[nrow][ncol] = player
+        # check left
+        while left > 0 and self.board[row][left] == player * -1:
+            left -= 1
+        if self.board[row][left] == player:
+            if col > 0: left = col - 1
+            while left > 0 and self.board[row][left] == player * -1:
+                self.board[row][left] = player
+                left -= 1
 
-                if player == self.PLAYER_COLOR:
-                    self.player_node += 1
-                    self.ai_node -= 1
-                else:
-                    self.player_node -= 1
-                    self.ai_node += 1
+        # check right
+        while right < self.size - 1 and self.board[row][right] == player * -1:
+            right += 1
+        if self.board[row][right] == player:
+            if col < self.size - 1: right = col + 1
+            while right < self.size - 1 and self.board[row][right] == player * -1:
+                self.board[row][right] = player
+                right += 1
 
-                nrow, ncol = nrow + x, ncol + y
-                if nrow < 0 or ncol < 0 or nrow >= self.size or ncol >= self.size:
-                    break
+        # check upper left
+        if row > 0: up = row - 1
+        if col > 0: left = col - 1
+        while up > 0 and left > 0 and self.board[up][left] == player * -1:
+            up -= 1
+            left -= 1
+        if self.board[up][left] == player:
+            if row > 0: up = row - 1
+            if col > 0: left = col - 1
+            while up > 0 and left > 0 and self.board[up][left] == player * -1:
+                self.board[up][left] = player
+                up -= 1
+                left -= 1
+
+        # check upper right
+        if row > 0: up = row - 1
+        if col < self.size - 1: right = col + 1
+        while up > 0 and right < self.size - 1 and self.board[up][right] == player * -1:
+            up -= 1
+            right += 1
+        if self.board[up][right] == player:
+            if row > 0: up = row - 1
+            if col < self.size - 1: right = col + 1
+            while up > 0 and right < self.size - 1 and self.board[up][right] == player * -1:
+                self.board[up][right] = player
+                up -= 1
+                right += 1
+
+        # check down left
+        if row < self.size - 1: down = row + 1
+        if col > 0: left = col - 1
+        while down < self.size - 1 and left > 0 and self.board[down][left] == player * -1:
+            down += 1
+            left -= 1
+        if self.board[down][left] == player:
+            if row < self.size - 1: down = row + 1
+            if col > 0: left = col - 1
+            while down < self.size - 1 and left > 0 and self.board[down][left] == player * -1:
+                self.board[down][left] = player
+                down += 1
+                left -= 1
+
+        # check down right
+        if row < self.size - 1: down = row + 1
+        if col < self.size - 1: right = col + 1
+        while down < self.size - 1 and right < self.size - 1 and self.board[down][right] == player * -1:
+            down += 1
+            right += 1
+        if self.board[down][right] == player:
+            if row < self.size - 1: down = row + 1
+            if col < self.size - 1: right = col + 1
+            while down < self.size - 1 and right < self.size - 1 and self.board[down][right] == player * -1:
+                self.board[down][right] = player
+                down += 1
+                right += 1
 
 
 
