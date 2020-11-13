@@ -1,6 +1,6 @@
 ﻿This is a AI game called **Reversi (Modified)**.  
 
-**bibliography**
+**Bibliography**
 Python version: 3.7
 Python Libraries:
 	Numpy  https://numpy.org/citing-numpy/
