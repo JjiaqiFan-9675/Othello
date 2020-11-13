@@ -1,7 +1,7 @@
 ﻿This is a AI game called **Reversi (Modified)**.  
 
 **Bibliography:**
-Python version: 3.7
+Python version: 3.7.
 Python Libraries:
 	**Numpy**  https://numpy.org/citing-numpy/
 
@@ -27,8 +27,8 @@ Any lines that include the obstacle grids would not be reversed.
 Players cannot put any pieces on the obstacle positions.
 
 **Your AI Friends:**
-Easy mode: Uniformly Random model
-Hard mode: Minimax Tree Model
+Easy mode: Uniformly Random model.
+\\Hard mode: Minimax Tree Model
 
 
 **Good luck and have fun\!** 
