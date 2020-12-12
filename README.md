@@ -5,12 +5,8 @@ Python version: 3.7
 Python Libraries:  
 	Numpy(https://numpy.org/citing-numpy/),  
 	Torch(https://pytorch.org/docs/stable/index.html),  
-	Torch.nn(https://pytorch.org/docs/stable/nn.html),  
-<<<<<<< HEAD
-	Pickle(https://docs.python.org/3/library/pickle.html)  
-=======
+	Torch.nn(https://pytorch.org/docs/stable/nn.html),   
 	Pickle(https://docs.python.org/3/library/pickle.html).  
->>>>>>> cccfbb022eb86027746d43bd67302aef7b6b676f
 
 **Rules:**  
 This is a two-player strategy board game, played on a square uncheckered board. 
