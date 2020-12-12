@@ -1,5 +1,7 @@
 from othello_board import Board
-from ai_player import AI
+import ai_method as AI
+import ai_net as an
+import torch as tr
 
 '''
     This is how the game runs! You are the player of this game!
@@ -13,25 +15,28 @@ class Game(object):
         print('Now you could determine the board size and block numbers ~')
         print('-----------------------------------------------------')
 
-        _input = input('Input the size of the board (Integers Only!!!!):')
+        _input = input('Input the size of the board (8 to 12 included):')
         print('-----------------------------------------------------')
         self.size = self.input_int_detect(_input, 0, 100)
-
 
         _input = input('Input the number of blocks on the board (Integers Only!!!!):')
         print('-----------------------------------------------------')
         self.block = self.input_int_detect(_input, 0, self.size)
 
-        self.ai_option = 1
+        self.ai_option = 0
         self.AI_RANDOM = 1
         self.AI_MINIMAX = 2
-        self.AI_EXPECTIMAX = 3
+        self.AI_CNN = 3
 
-        print('Now, choose the mode of game. 1:Easy mode(Random AI). 2:Medium mode(Minimax). 3:Hard mode(EXPECTIMAX)')
+        print('Now, choose the mode of game. 0: Hand mode(Human) 1:Easy mode(Random AI). 2:Medium mode(Minimax AI). 3:Hard mode(CNN AI)')
         print('-----------------------------------------------------')
         _input = input('Input the integer to the mode: ')
         print('-----------------------------------------------------')
-        self.ai_option = self.input_int_detect(_input, 1, 4)
+        self.ai_option = self.input_int_detect(_input, 0, 4)
+        self.net = None
+        if self.ai_option == self.AI_CNN:
+            self.net = an.BlockusNet1(self.size)
+            self.net.load_state_dict(tr.load("model/model%d.pth" % self.size))
 
         print('Choose whether to play first')
         print('-----------------------------------------------------')
@@ -122,8 +127,16 @@ class Game(object):
             action = AI.random_method(actions)
         elif self.ai_option == self.AI_MINIMAX:
             action = AI.minimax_method(actions, self.oth)
+        elif self.ai_option == self.AI_CNN:
+            action = AI.cnn_method(self.net, actions, self.oth)
         else:
-            action = AI.expectimax_method(actions, self.oth)
+            _input = input(
+                    'Input the index(from zero) you want to choose(Integers Only and must be less than {}):'.format(
+                        len(actions)))
+            print('-----------------------------------------------------')
+
+            index = self.input_int_detect(_input, 0, len(actions))
+            action = actions[index]
 
         print("The AI chooses " + str(action))
 

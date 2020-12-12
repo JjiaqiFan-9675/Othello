@@ -54,6 +54,7 @@ class Board:
         self.ai_node = ai_node
         self.player_node = player_node
 
+
     def action_valid(self, player):
         actions = set()
 
