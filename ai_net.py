@@ -3,6 +3,11 @@ import numpy as np
 import pickle as pk
 from torch.nn import Linear, Flatten
 
+'''
+    This is to generate CNN model from PKL data.
+    Each model uses 5000 iterations of gradient descent to train neural networks.
+    The figure generated is in directory 'figure'
+'''
 def BlockusNet1(board_size):
     class Nets(tr.nn.Module):
         def __init__(self, board_size):

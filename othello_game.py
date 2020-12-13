@@ -5,6 +5,7 @@ import torch as tr
 
 '''
     This is how the game runs! You are the player of this game!
+    The game introduction is in README.md .
 '''
 
 class Game(object):
