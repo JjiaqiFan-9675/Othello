@@ -59,16 +59,39 @@ def ai_random_with_minimax(size):
     write_csv_file(results, size)
 
 def ai_minimax_with_cnn(size):
-    net = an.BlockusNet1(size)
-    net.load_state_dict(tr.load("model/model%d.pth" % size))
-    results = []
+    #net = an.Aitong_Net(size)
+    #net.load_state_dict(tr.load("model/model%d.pth" % size))
+
+    net = an.Jiaqi_Net(size)
+    net.load_state_dict(tr.load("model2/model%d.pth" % size))
+
+    import matplotlib.pyplot as pt
+
+    results_p = []
+    results_n = []
+    index_p = []
+    index_n = []
     for i in range(0, 100):
         print('----No.', i, '----')
         test = AI_WITH_AI(size, i, net)
         test.minimax_cnn_game_begin()
-        results.append(test.get_result())
-    write_csv_file(results, size)
+        result = test.get_result()[-1]
 
+        if result > 0:
+            index_p.append(i+1)
+            results_p.append(result)
+        else:
+            index_n.append(i+1)
+            results_n.append(result * -1)
+
+    pt.bar(x=index_p, height=results_p, label='CNN WIN')
+    pt.bar(x=index_n, height=results_n, label='Minimax WIN')
+    pt.title = 'Minimax_AI VS CNN_AI'
+    pt.xlabel = 'Index of Game'
+    pt.ylabel = 'Final Score'
+    pt.legend()
+    pt.savefig("figure2/final_score%d.png" % size)
+    pt.show()
 
 def ai_minimax_with_minimax(size):
     data = []
@@ -82,7 +105,8 @@ def ai_minimax_with_minimax(size):
 
 
 if __name__ == "__main__":
-    #print('----No.', i,'----')ai_minimax_with_minimax(size=12)
-    ai_minimax_with_cnn(size=11)
+    #print('----No.', i,'----')
+    # ai_minimax_with_minimax(size=12)
+    ai_minimax_with_cnn(size=12)
 
 

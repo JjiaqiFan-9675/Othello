@@ -36,7 +36,7 @@ class Game(object):
         self.ai_option = self.input_int_detect(_input, 0, 4)
         self.net = None
         if self.ai_option == self.AI_CNN:
-            self.net = an.BlockusNet1(self.size)
+            self.net = an.Aitong_Net(self.size)
             self.net.load_state_dict(tr.load("model/model%d.pth" % self.size))
 
         print('Choose whether to play first')
