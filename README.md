@@ -9,7 +9,7 @@ Python Libraries:
 	Pickle(https://docs.python.org/3/library/pickle.html).  
 
 **Rules:**  
-This is a two-player strategy board game, played on a square uncheckered board. 
+This is a two-player strategy board game, played on a square board. 
 At the beginning of the game, 2 white and 2 black pieces are put in the center of the board. 
 Players take turns putting one white or black Reversi piece on the board. Each player can only use one color. 
 Players should always put their pieces on the board so that two of them can form a straight line (horizontal, vertical, or diagonal). 
@@ -33,7 +33,7 @@ Players cannot put any pieces on the obstacle positions.
 Hand mode: You will have two manual roles with no AI friends.  
 Easy mode: Uniformly Random model AI.  
 Media mode: Minimax Algorithm(Sion, 1958) Tree Model AI.  
-Hard mode: Convolutional Neural(Fukushima, 1980) Netword AI.  
+Hard mode: Convolutional Neural Network(Fukushima, 1980) AI.  
 
 
 **Good luck and have fun\!** 
